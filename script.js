@@ -95,10 +95,8 @@ function loadQuestion() {
 
     document.getElementById("question").textContent = kanji;
 
-    // 画像
-    const imgPath = `images/${kanji}.png`;
-    document.getElementById("kanji-image").innerHTML =
-        `<img src="${imgPath}" onerror="this.src=''; this.outerHTML='<p>画像なし</p>'" width="200">`;
+    // 画像なし
+    document.getElementById("kanji-image").innerHTML = "";
 
     // 選択肢
     const allChoices = [...new Set(Object.values(currentDict))];
