@@ -1,110 +1,34 @@
-body {
-    font-family: "MS Gothic", sans-serif;
-    text-align: center;
-    background: #ffffff;
-    color: #000000;
-    margin: 0;
-    padding: 0;
-}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>さかな漢字クイズ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-/* 画面中央に収める */
-.screen {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-}
+<div id="app">
+    <h1>さかな漢字クイズ</h1>
 
-.hidden {
-    display: none;
-}
+    <div id="start-screen">
+        <select id="mode-select">
+            <option value="easy">初級（3択）</option>
+            <option value="normal">中級（4択）</option>
+            <option value="hard">上級（5択）</option>
+        </select>
+        <button id="start-btn">スタート</button>
+    </div>
 
-h1 {
-    font-size: 2.2rem;
-    margin-bottom: 20px;
-}
+    <div id="quiz-screen" class="hidden">
+        <div id="question"></div>
+        <img id="fish-image" src="">
+        <div id="choices"></div>
+        <div id="result"></div>
+        <button id="next-btn" class="hidden">次へ</button>
+    </div>
 
-h2 {
-    font-size: 1.6rem;
-}
+</div>
 
-#question {
-    font-size: 4rem;
-    margin: 20px 0;
-}
-
-#choices {
-    margin-top: 20px;
-}
-
-/* 選択肢ボタン */
-.choice-btn {
-    display: block;
-    width: 90%;
-    max-width: 500px;
-    margin: 15px auto;
-    padding: 18px;
-    font-size: 1.8rem;
-    font-weight: bold;
-    border-radius: 15px;
-    border: 3px solid #000000;
-    background: #ffffff;
-    color: #000000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.choice-btn:hover {
-    background: #f2f2f2;
-    transform: scale(1.03);
-}
-
-.choice-btn:active {
-    background: #e0e0e0;
-    transform: scale(0.98);
-}
-
-/* 入力欄 */
-input {
-    font-size: 1.2rem;
-    padding: 8px;
-    width: 70%;
-    margin-top: 10px;
-}
-
-/* ▼ スマホ専用調整（600px以下） */
-@media (max-width: 600px) {
-
-  h1 {
-    font-size: 1.8rem;
-  }
-
-  #question {
-    font-size: 2.8rem;
-  }
-
-  .choice-btn {
-    font-size: 1.4rem;
-    padding: 14px;
-  }
-
-  input {
-    width: 85%;
-    font-size: 1rem;
-  }
-
-  #start-btn,
-  #next-btn,
-  #save-btn,
-  #back-btn {
-    width: 85%;
-    max-width: 400px;
-    padding: 14px;
-    font-size: 1.2rem;
-  }
-
-  select {
-    font-size: 1.1rem;
-    padding: 6px;
-  }
-}
+<script src="script.js"></script>
+</body>
+</html>
