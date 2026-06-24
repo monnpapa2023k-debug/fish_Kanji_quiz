@@ -11,10 +11,10 @@
 <div id="app">
 
     <!-- スタート画面 -->
-    <div id="start-screen" class="screen">
+    <section id="start-screen" class="screen">
         <h1>さかな漢字クイズ</h1>
 
-        <label>難易度を選んでね：</label>
+        <label for="difficulty">難易度を選んでね：</label>
         <select id="difficulty">
             <option value="easy">初級（3択）</option>
             <option value="normal">中級（4択）</option>
@@ -22,40 +22,38 @@
         </select>
 
         <button id="start-btn">スタート</button>
-    </div>
+    </section>
 
     <!-- クイズ画面 -->
-    <div id="quiz-screen" class="screen hidden">
+    <section id="quiz-screen" class="screen hidden">
         <h2 id="progress"></h2>
         <div id="kanji-image"></div>
         <h1 id="question"></h1>
         <div id="choices"></div>
         <p id="result"></p>
         <button id="next-btn" class="hidden">次へ</button>
-    </div>
+    </section>
 
     <!-- 結果画面 -->
-    <div id="result-screen" class="screen hidden">
+    <section id="result-screen" class="screen hidden">
         <h1>結果発表！</h1>
         <h2 id="final-score"></h2>
         <p id="final-detail"></p>
 
-        <label>名前を入力してランキング登録：</label>
+        <label for="player-name">名前を入力してランキング登録：</label>
         <input id="player-name" type="text" value="プレイヤー1">
 
         <button id="save-btn">ランキングに登録</button>
-    </div>
+    </section>
 
     <!-- ランキング画面 -->
-    <div id="ranking-screen" class="screen hidden">
+    <section id="ranking-screen" class="screen hidden">
         <h1 id="rank-title"></h1>
         <div id="ranking-list"></div>
+
         <button id="back-btn">タイトルへ戻る</button>
         <button id="reset-btn">ランキングをリセット</button>
-
-        
-
-    </div>
+    </section>
 
 </div>
 
