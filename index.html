@@ -5,27 +5,32 @@
     <title>さかな漢字クイズ</title>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
 </head>
 <body>
 
 <div id="app">
-    <h1>さかな漢字クイズ</h1>
 
-    <div id="start-screen">
-        <select id="mode-select">
+    <!-- スタート画面 -->
+    <div id="start-screen" class="screen">
+        <h1>さかな漢字クイズ</h1>
+
+        <label>難易度を選んでね：</label>
+        <select id="difficulty">
             <option value="easy">初級（3択）</option>
             <option value="normal">中級（4択）</option>
             <option value="hard">上級（5択）</option>
         </select>
+
         <button id="start-btn">スタート</button>
     </div>
 
-    <div id="quiz-screen" class="hidden">
-        <div id="question"></div>
-        <img id="fish-image" src="">
+    <!-- クイズ画面 -->
+    <div id="quiz-screen" class="screen hidden">
+        <h2 id="progress"></h2>
+        <div id="kanji-image"></div>
+        <h1 id="question"></h1>
         <div id="choices"></div>
-        <div id="result"></div>
+        <p id="result"></p>
         <button id="next-btn" class="hidden">次へ</button>
     </div>
 
@@ -33,4 +38,6 @@
 
 <script src="script.js"></script>
 </body>
+</html>
+
 </html>
