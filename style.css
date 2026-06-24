@@ -40,16 +40,31 @@ h2 {
 
 .choice-btn {
     display: block;
-    width: 80%;
-    margin: 10px auto;
-    padding: 15px;
-    font-size: 22px;
-    border-radius: 10px;
-    border: none;
-    background: #ffffff;
-    box-shadow: 0 0 5px #aaa;
+    width: 90%;
+    max-width: 600px;
+    margin: 15px auto;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 15px;
+    border: 3px solid #000000; /* 黒い枠で見やすい */
+    background: #ffffff;       /* 背景白 */
+    color: #000000;            /* 文字黒 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     cursor: pointer;
+    transition: 0.2s;
 }
+
+.choice-btn:hover {
+    background: #f2f2f2; /* 少しグレーでホバーがわかる */
+    transform: scale(1.03);
+}
+
+.choice-btn:active {
+    background: #e0e0e0; /* 押したときの色 */
+    transform: scale(0.98);
+}
+
 
 .choice-btn:hover {
     background: #e0f7ff;
