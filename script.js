@@ -193,6 +193,9 @@ function showRanking(list, name, totalScore, time) {
     }
 };
 
+    }
+};
+
     
     document.getElementById("back-btn").onclick = () => {
         showScreen("start-screen");
