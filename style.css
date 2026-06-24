@@ -1,0 +1,71 @@
+body {
+    font-family: "MS Gothic", sans-serif;
+    text-align: center;
+    background: #f0f8ff;
+    margin: 0;
+    padding: 0;
+}
+
+.screen {
+    padding: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+#question {
+    font-size: 60px;
+    margin: 20px 0;
+}
+
+#choices {
+    margin-top: 20px;
+}
+
+.choice-btn {
+    display: block;
+    width: 80%;
+    margin: 10px auto;
+    padding: 15px;
+    font-size: 22px;
+    border-radius: 10px;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0 0 5px #aaa;
+    cursor: pointer;
+}
+
+.choice-btn:hover {
+    background: #e0f7ff;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 20px;
+    border-radius: 8px;
+    border: none;
+    background: #4da6ff;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1a8cff;
+}
+
+input {
+    font-size: 20px;
+    padding: 8px;
+    width: 60%;
+    margin-top: 10px;
+}
