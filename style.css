@@ -7,7 +7,7 @@ body {
     padding: 0;
 }
 
-/* 画面幅に合わせて中央寄せ */
+/* 画面中央に収める */
 .screen {
     padding: 20px;
     max-width: 800px;
@@ -36,7 +36,7 @@ h2 {
     margin-top: 20px;
 }
 
-/* ボタンはスマホで押しやすく、横幅は画面に合わせる */
+/* 選択肢ボタン */
 .choice-btn {
     display: block;
     width: 90%;
@@ -64,6 +64,7 @@ h2 {
     transform: scale(0.98);
 }
 
+/* 入力欄 */
 input {
     font-size: 1.2rem;
     padding: 8px;
@@ -90,5 +91,20 @@ input {
   input {
     width: 85%;
     font-size: 1rem;
+  }
+
+  #start-btn,
+  #next-btn,
+  #save-btn,
+  #back-btn {
+    width: 85%;
+    max-width: 400px;
+    padding: 14px;
+    font-size: 1.2rem;
+  }
+
+  select {
+    font-size: 1.1rem;
+    padding: 6px;
   }
 }
