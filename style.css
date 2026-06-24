@@ -1,10 +1,12 @@
 body {
     font-family: "MS Gothic", sans-serif;
     text-align: center;
-    background: #f0f8ff;
+    background: #ffffff; /* 背景を白に */
+    color: #000000;      /* 文字を黒に */
     margin: 0;
     padding: 0;
 }
+
 
 .screen {
     padding: 20px;
