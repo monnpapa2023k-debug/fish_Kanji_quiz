@@ -34,10 +34,28 @@
         <button id="next-btn" class="hidden">次へ</button>
     </div>
 
+    <!-- 結果画面 -->
+    <div id="result-screen" class="screen hidden">
+        <h1>結果発表！</h1>
+        <h2 id="final-score"></h2>
+        <p id="final-detail"></p>
+
+        <label>名前を入力してランキング登録：</label>
+        <input id="player-name" type="text" value="プレイヤー1">
+
+        <button id="save-btn">ランキングに登録</button>
+    </div>
+
+    <!-- ランキング画面 -->
+    <div id="ranking-screen" class="screen hidden">
+        <h1 id="rank-title"></h1>
+        <div id="ranking-list"></div>
+        <button id="back-btn">タイトルへ戻る</button>
+    </div>
+
 </div>
 
 <script src="script.js"></script>
 </body>
 </html>
 
-</html>
