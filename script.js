@@ -1,43 +1,28 @@
-// --- 魚漢字データ ---
-const kanji_easy = {
-    "魚": "さかな", "鮎": "あゆ", "鰯": "いわし", "鰻": "うなぎ", "海老": "えび",
-    "鮭": "さけ", "鯖": "さば", "鯛": "たい", "鯨": "くじら", "蛸": "たこ",
-    "鯉": "こい", "鮫": "さめ", "鮪": "まぐろ", "鰹": "かつお", "鱈": "たら",
-    "鱒": "ます", "鰈": "かれい", "鮃": "ひらめ", "蟹": "かに", "貝": "かい"
+// --- 魚漢字データ ---// --- 魚漢字データ ---
+const DICTS = {
+    easy: {
+        dict: {
+            "魚": "さかな", "鮎": "あゆ", "鰯": "いわし", "鰻": "うなぎ", "海老": "えび",
+            "鮭": "さけ", "鯖": "さば", "鯛": "たい", "鯨": "くじら", "蛸": "たこ",
+            "鯉": "こい", "鮫": "さめ", "鮪": "まぐろ", "鰹": "かつお", "鱈": "たら",
+            "鱒": "ます", "鰈": "かれい", "鮃": "ひらめ", "蟹": "かに", "貝": "かい"
+        },
+        choices: 3
+    },
+    normal: {
+        dict: kanji_normal,
+        choices: 4
+    },
+    hard: {
+        dict: kanji_hard,
+        choices: 5
+    }
 };
 
-const kanji_normal = {
-    "鯵": "あじ", "鰺": "あじ", "鮑": "あわび", "鰒": "ふぐ", "魷": "いか",
-    "鯔": "ぼら", "鯆": "いるか", "鮇": "いわな", "鱓": "うつぼ", "鱏": "えい",
-    "鮖": "かじか", "魛": "たちうお", "鰊": "にしん", "鯏": "あさり", "鰡": "ぼら",
-    "鯑": "かずのこ", "鮟鱇": "あんこう", "鰍": "どじょう", "鰌": "どじょう", "鰔": "さより",
-    "魴": "ほうぼう", "鮗": "このしろ", "鯊": "はぜ", "鯳": "すけとうだら",
-    "鱚": "きす"
-};
-
-const kanji_hard = {
-    "魭": "あおうみがめ", "鯘": "あざれ", "鮩": "あみ",
-    "鯇": "あめのうお", "鰀": "あめのうお", "鮟": "あん",
-    "鮧": "えそ", "鰂": "いか", "鰞": "いか", "鮻": "いさぎ",
-    "魦": "いさざ", "鱊": "いさだ", "鰵": "いしもち", "鰝": "いせえび",
-    "魚鬼": "いとう", "鰮": "いわし", "鰛": "いわし", "鷠": "ぎょ",
-    "鰾": "うきぶくろ", "鱥": "うぐい", "魿": "うろこ",
-    "鱁": "うるか", "鱗": "うろこ", "鱝": "えい", "鰩": "とびうお",
-    "鱛": "えそ", "鮆": "えつ", "鱴": "えつ",
-    "魮": "えつ", "鰕": "えび", "鰓": "えら",
-    "魞": "えり", "鰲": "おおがめ", "鮱": "ぼら", "鰧": "おこぜ",
-    "魯": "おろか", "鱠": "なます", "鱪": "しいら", "魳": "かます",
-    "鱫": "えそ", "鱦": "かたくちいわし", "鯺": "ふぐ", "鱵": "さより",
-    "鱨": "ぎぎ", "鮄": "ほうぼう", "鯓": "うろこ"
-};
-
-// --- ランキング保存（localStorage） ---
+// --- ランキング ---
 function loadRanking() {
-    const data = localStorage.getItem("fish_ranking");
-    return data ? JSON.parse(data) : {
-        "easy": [],
-        "normal": [],
-        "hard": []
+    return JSON.parse(localStorage.getItem("fish_ranking")) || {
+        easy: [], normal: [], hard: []
     };
 }
 
@@ -45,7 +30,7 @@ function saveRanking(ranking) {
     localStorage.setItem("fish_ranking", JSON.stringify(ranking));
 }
 
-// --- 変数 ---
+// --- 状態 ---
 let mode = "easy";
 let choiceCount = 3;
 let currentDict = {};
@@ -60,33 +45,17 @@ function showScreen(id) {
     document.getElementById(id).classList.remove("hidden");
 }
 
-// --- スタート ---
-document.getElementById("start-btn").onclick = () => {
-    mode = document.getElementById("difficulty").value;
-
-    if (mode === "easy") {
-        choiceCount = 3;
-        currentDict = kanji_easy;
-    } else if (mode === "normal") {
-        choiceCount = 4;
-        currentDict = kanji_normal;
-    } else {
-        choiceCount = 5;
-        currentDict = kanji_hard;
+// --- Fisher–Yates シャッフル ---
+function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+    return arr;
+}
 
-    const all = Object.entries(currentDict);
-    questions = shuffle(all).slice(0, 5);
-
-    index = 0;
-    score = 0;
-    startTime = Date.now();
-
-    showScreen("quiz-screen");
-    loadQuestion();
-};
-
-// --- 問題表示 ---
+// --- 問題読み込み ---
 function loadQuestion() {
     const [kanji, yomi] = questions[index];
 
@@ -94,17 +63,11 @@ function loadQuestion() {
         `第 ${index + 1} 問 / 全 5 問`;
 
     document.getElementById("question").textContent = kanji;
-
-    // 画像なし
     document.getElementById("kanji-image").innerHTML = "";
 
-    // 選択肢
     const allChoices = [...new Set(Object.values(currentDict))];
-    const correct = yomi;
-
-    const wrongChoices = shuffle(allChoices.filter(c => c !== correct)).slice(0, choiceCount - 1);
-
-    const choices = shuffle([correct, ...wrongChoices]);
+    const wrong = shuffle(allChoices.filter(c => c !== yomi)).slice(0, choiceCount - 1);
+    const choices = shuffle([yomi, ...wrong]);
 
     const choiceDiv = document.getElementById("choices");
     choiceDiv.innerHTML = "";
@@ -121,30 +84,22 @@ function loadQuestion() {
     document.getElementById("next-btn").classList.add("hidden");
 }
 
-// --- 回答チェック ---
+// --- 回答 ---
 function checkAnswer(choice) {
     const correct = questions[index][1];
+    const result = document.getElementById("result");
 
     if (choice === correct) {
-        document.getElementById("result").textContent = "⭕ 正解！";
-        document.getElementById("result").style.color = "green";
+        result.textContent = "⭕ 正解！";
+        result.style.color = "green";
         score++;
     } else {
-        document.getElementById("result").textContent = `❌ 不正解… 正解は「${correct}」`;
-        document.getElementById("result").style.color = "red";
+        result.textContent = `❌ 不正解… 正解は「${correct}」`;
+        result.style.color = "red";
     }
 
     document.getElementById("next-btn").classList.remove("hidden");
 }
-
-document.getElementById("next-btn").onclick = () => {
-    index++;
-    if (index >= 5) {
-        showResult();
-    } else {
-        loadQuestion();
-    }
-};
 
 // --- 結果 ---
 function showResult() {
@@ -168,15 +123,13 @@ function showResult() {
         ranking[mode].sort((a, b) => b.totalScore - a.totalScore);
 
         saveRanking(ranking);
-        showRanking(ranking[mode], name, totalScore, time);
+        showRanking(ranking[mode]);
     };
 }
 
-// --- ランキング ---
-function showRanking(list, name, totalScore, time) {
+// --- ランキング表示 ---
+function showRanking(list) {
     showScreen("ranking-screen");
-
-    document.getElementById("rank-title").textContent = "ランキング TOP5";
 
     const div = document.getElementById("ranking-list");
     div.innerHTML = "";
@@ -185,7 +138,6 @@ function showRanking(list, name, totalScore, time) {
         div.innerHTML += `<p>${i + 1}位：${r.name}（${r.totalScore}点 / ${r.score}問 / ${r.time.toFixed(1)}秒）</p>`;
     });
 
-    // ランキングリセット
     document.getElementById("reset-btn").onclick = () => {
         if (confirm("ランキングを全部消しますか？")) {
             localStorage.removeItem("fish_ranking");
@@ -194,23 +146,31 @@ function showRanking(list, name, totalScore, time) {
         }
     };
 
-    
-    }
-};
-
-    }
-};
-
-    }
-};
-
-    
     document.getElementById("back-btn").onclick = () => {
         showScreen("start-screen");
     };
 }
 
-// --- シャッフル ---
-function shuffle(arr) {
-    return arr.sort(() => Math.random() - 0.5);
-}
+// --- イベント登録 ---
+document.getElementById("start-btn").onclick = () => {
+    mode = document.getElementById("difficulty").value;
+
+    currentDict = DICTS[mode].dict;
+    choiceCount = DICTS[mode].choices;
+
+    questions = shuffle(Object.entries(currentDict)).slice(0, 5);
+
+    index = 0;
+    score = 0;
+    startTime = Date.now();
+
+    showScreen("quiz-screen");
+    loadQuestion();
+};
+
+document.getElementById("next-btn").onclick = () => {
+    index++;
+    if (index >= 5) showResult();
+    else loadQuestion();
+};
+
