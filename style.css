@@ -111,3 +111,56 @@ input {
 
   }
 }
+/* ▼ 追加：全ボタンの共通デザイン（スマホで押しやすく） */
+button {
+    width: 90%;
+    max-width: 400px;
+    padding: 16px;
+    font-size: 1.4rem;
+    margin: 15px auto;
+    display: block;
+    border-radius: 12px;
+    border: 2px solid #000;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* ▼ セレクトボックスもスマホ向けに */
+select {
+    width: 80%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+/* ▼ スマホ専用調整 */
+@media (max-width: 600px) {
+
+  .screen {
+    padding: 24px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  #question {
+    font-size: 2.8rem;
+  }
+
+  .choice-btn {
+    font-size: 1.4rem;
+    padding: 14px;
+  }
+
+  button {
+    font-size: 1.2rem;
+    padding: 14px;
+  }
+
+  select {
+    font-size: 1.1rem;
+    padding: 8px;
+  }
+}
