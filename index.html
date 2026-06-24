@@ -1,62 +1,110 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
+body {
+    font-family: "MS Gothic", sans-serif;
+    text-align: center;
+    background: #ffffff;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+}
 
-    <meta charset="UTF-8">
-    <title>魚漢字クイズ（Web版）</title>
-    <link rel="stylesheet" href="style.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+/* 画面中央に収める */
+.screen {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-</head>
-<body>
+.hidden {
+    display: none;
+}
 
-    <div id="app">
-        <!-- スタート画面 -->
-        <div id="start-screen" class="screen">
-            <h1>難読さかな漢字クイズ</h1>
+h1 {
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+}
 
-            <label>難易度を選んでね：</label>
-            <select id="difficulty">
-                <option value="easy">初級（3択）</option>
-                <option value="normal">中級（4択）</option>
-                <option value="hard">上級（5択）</option>
-            </select>
+h2 {
+    font-size: 1.6rem;
+}
 
-            <button id="start-btn">クイズを始める</button>
+#question {
+    font-size: 4rem;
+    margin: 20px 0;
+}
 
-            <div id="ranking-preview"></div>
-        </div>
+#choices {
+    margin-top: 20px;
+}
 
-        <!-- クイズ画面 -->
-        <div id="quiz-screen" class="screen hidden">
-            <h2 id="progress"></h2>
-            <div id="kanji-image"></div>
-            <h1 id="question"></h1>
-            <div id="choices"></div>
-            <p id="result"></p>
-            <button id="next-btn" class="hidden">次の問題へ</button>
-        </div>
+/* 選択肢ボタン */
+.choice-btn {
+    display: block;
+    width: 90%;
+    max-width: 500px;
+    margin: 15px auto;
+    padding: 18px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-radius: 15px;
+    border: 3px solid #000000;
+    background: #ffffff;
+    color: #000000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-        <!-- 結果画面 -->
-        <div id="result-screen" class="screen hidden">
-            <h1>結果発表！</h1>
-            <h2 id="final-score"></h2>
-            <p id="final-detail"></p>
+.choice-btn:hover {
+    background: #f2f2f2;
+    transform: scale(1.03);
+}
 
-            <label>名前を入力してランキング登録：</label>
-            <input id="player-name" type="text" value="プレイヤー1">
+.choice-btn:active {
+    background: #e0e0e0;
+    transform: scale(0.98);
+}
 
-            <button id="save-btn">ランキングに登録</button>
-        </div>
+/* 入力欄 */
+input {
+    font-size: 1.2rem;
+    padding: 8px;
+    width: 70%;
+    margin-top: 10px;
+}
 
-        <!-- ランキング画面 -->
-        <div id="ranking-screen" class="screen hidden">
-            <h1 id="rank-title"></h1>
-            <div id="ranking-list"></div>
-            <button id="back-btn">タイトルへ戻る</button>
-        </div>
-    </div>
+/* ▼ スマホ専用調整（600px以下） */
+@media (max-width: 600px) {
 
-    <script src="script.js"></script>
-</body>
-</html>
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  #question {
+    font-size: 2.8rem;
+  }
+
+  .choice-btn {
+    font-size: 1.4rem;
+    padding: 14px;
+  }
+
+  input {
+    width: 85%;
+    font-size: 1rem;
+  }
+
+  #start-btn,
+  #next-btn,
+  #save-btn,
+  #back-btn {
+    width: 85%;
+    max-width: 400px;
+    padding: 14px;
+    font-size: 1.2rem;
+  }
+
+  select {
+    font-size: 1.1rem;
+    padding: 6px;
+  }
+}
