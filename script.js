@@ -185,11 +185,19 @@ function showRanking(list, name, totalScore, time) {
         div.innerHTML += `<p>${i + 1}位：${r.name}（${r.totalScore}点 / ${r.score}問 / ${r.time.toFixed(1)}秒）</p>`;
     });
 
+    // ランキングリセット
     document.getElementById("reset-btn").onclick = () => {
-    if (confirm("ランキングを全部消しますか？")) {
-        localStorage.removeItem("fish_ranking");
-        alert("ランキングを消しました！");
-        showScreen("start-screen");
+        if (confirm("ランキングを全部消しますか？")) {
+            localStorage.removeItem("fish_ranking");
+            alert("ランキングを消しました！");
+            showScreen("start-screen");
+        }
+    };
+
+    
+    }
+};
+
     }
 };
 
