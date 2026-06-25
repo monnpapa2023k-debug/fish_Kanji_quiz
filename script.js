@@ -124,6 +124,13 @@ function loadQuestion() {
 function checkAnswer(choice) {
     const correct = questions[index][1];
 
+    // --- ここで全ボタンを無効化 ---
+    document.querySelectorAll(".choice-btn").forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = "0.6";   // 見た目で押せない感じに
+        btn.style.cursor = "default";
+    });
+
     if (choice === correct) {
         document.getElementById("result").textContent = "⭕ 正解！";
         document.getElementById("result").style.color = "green";
@@ -135,6 +142,7 @@ function checkAnswer(choice) {
 
     document.getElementById("next-btn").classList.remove("hidden");
 }
+
 
 // --- 次へ ---
 document.getElementById("next-btn").onclick = () => {
