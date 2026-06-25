@@ -117,7 +117,14 @@ function loadQuestion() {
     });
 
     document.getElementById("result").textContent = "";
-    document.getElementById("next-btn").classList.add("hidden");
+    document.getElementById("next-btn").classList.add("hidden");// --- 選択肢ボタンを有効化（スマホ対策） ---
+document.querySelectorAll(".choice-btn").forEach(btn => {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+});
+
+    
 }
 
 // --- 回答チェック ---
