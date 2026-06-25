@@ -162,3 +162,49 @@ select {
     padding: 8px;
   }
 }
+/* ▼ 豪華な金色グラデーション背景＋魚シルエット */
+body {
+    font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "MS Gothic", sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+
+    /* 金色の豪華グラデーション */
+    background: linear-gradient(135deg, #fff8e1, #f7d98c, #e6b84e, #f7d98c, #fff8e1);
+    background-size: 400% 400%;
+    animation: goldFlow 12s ease infinite;
+
+    color: #000;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 金色がゆっくり流れるアニメーション */
+@keyframes goldFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ▼ 魚のシルエット（うっすら表示） */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("https://i.imgur.com/1Q9Z1ZL.png") center/45% no-repeat;
+    opacity: 0.08; /* うっすら感 */
+    pointer-events: none; /* クリックを邪魔しない */
+    z-index: -1;
+}
+
+/* ▼ さらに複数の魚が漂う演出（オプション） */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("https://i.imgur.com/1Q9Z1ZL.png") left 10% top 70% / 25% no-repeat,
+                url("https://i.imgur.com/1Q9Z1ZL.png") right 5% top 20% / 30% no-repeat;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: -1;
+}
