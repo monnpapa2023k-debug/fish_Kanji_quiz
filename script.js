@@ -1,213 +1,145 @@
-// --- 魚漢字データ ---
-const kanji_easy = {
-    "魚": "さかな", "鮎": "あゆ", "鰯": "いわし", "鰻": "うなぎ", "海老": "えび",
-    "鮭": "さけ", "鯖": "さば", "鯛": "たい", "鯨": "くじら", "蛸": "たこ",
-    "鯉": "こい", "鮫": "さめ", "鮪": "まぐろ", "鰹": "かつお", "鱈": "たら",
-    "鱒": "ます", "鰈": "かれい", "鮃": "ひらめ", "蟹": "かに", "貝": "かい"
-};
-
-const kanji_normal = {
-    "鯵": "あじ", "鰺": "あじ", "鮑": "あわび", "鰒": "ふぐ", "魷": "いか",
-    "鯔": "ぼら", "鯆": "いるか", "鮇": "いわな", "鱓": "うつぼ", "鱏": "えい",
-    "鮖": "かじか", "魛": "たちうお", "鰊": "にしん", "鯏": "あさり", "鰡": "ぼら",
-    "鯑": "かずのこ", "鮟鱇": "あんこう", "鰍": "どじょう", "鰌": "どじょう", "鰔": "さより",
-    "魴": "ほうぼう", "鮗": "このしろ", "鯊": "はぜ", "鯳": "すけとうだら",
-    "鱚": "きす"
-};
-
-const kanji_hard = {
-    "魭": "あおうみがめ", "鯘": "あざれ", "鮩": "あみ",
-    "鯇": "あめのうお", "鰀": "あめのうお", "鮟": "あん",
-    "鮧": "えそ", "鰂": "いか", "鰞": "いか", "鮻": "いさぎ",
-    "魦": "いさざ", "鱊": "いさだ", "鰵": "いしもち", "鰝": "いせえび",
-    "魚鬼": "いとう", "鰮": "いわし", "鰛": "いわし", "鷠": "ぎょ",
-    "鰾": "うきぶくろ", "鱥": "うぐい", "魿": "うろこ",
-    "鱁": "うるか", "鱗": "うろこ", "鱝": "えい", "鰩": "とびうお",
-    "鱛": "えそ", "鮆": "えつ", "鱴": "えつ",
-    "魮": "えつ", "鰕": "えび", "鰓": "えら",
-    "魞": "えり", "鰲": "おおがめ", "鮱": "ぼら", "鰧": "おこぜ",
-    "魯": "おろか", "鱠": "なます", "鱪": "しいら", "魳": "かます",
-    "鱫": "えそ", "鱦": "かたくちいわし", "鯺": "ふぐ", "鱵": "さより",
-    "鱨": "ぎぎ", "鮄": "ほうぼう", "鯓": "うろこ"
-};
-
-// --- ランキング保存 ---
-function loadRanking() {
-    const data = localStorage.getItem("fish_ranking");
-    return data ? JSON.parse(data) : { easy: [], normal: [], hard: [] };
-}
-
-function saveRanking(ranking) {
-    localStorage.setItem("fish_ranking", JSON.stringify(ranking));
-}
-
-// --- 変数 ---
-let mode = "easy";
-let choiceCount = 3;
-let currentDict = {};
-let questions = [];
-let index = 0;
-let score = 0;
-let startTime = 0;
-
-// --- 画面切り替え ---
-function showScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
-}
-
-// --- シャッフル（Fisher–Yates） ---
-function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>進化した！難読さかな漢字クイズ</title>
+  <style>
+    body {
+      font-family: 'MS Gothic', 'Yu Gothic', Arial, sans-serif;
+      background-color: #f0f8ff;
+      color: #333;
+      text-align: center;
+      padding: 20px;
     }
-    return a;
-}
-
-// --- スタート ---
-document.getElementById("start-btn").onclick = () => {
-    mode = document.getElementById("difficulty").value;
-
-    if (mode === "easy") {
-        choiceCount = 3;
-        currentDict = kanji_easy;
-    } else if (mode === "normal") {
-        choiceCount = 4;
-        currentDict = kanji_normal;
-    } else {
-        choiceCount = 5;
-        currentDict = kanji_hard;
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-
-    questions = shuffle(Object.entries(currentDict)).slice(0, 5);
-
-    index = 0;
-    score = 0;
-    startTime = Date.now();
-
-    showScreen("quiz-screen");
-    loadQuestion();
-};
-
-// --- 問題表示 ---
-function loadQuestion() {
-    const [kanji, yomi] = questions[index];
-
-    document.getElementById("progress").textContent =
-        `第 ${index + 1} 問 / 全 5 問`;
-
-    document.getElementById("question").textContent = kanji;
-    document.getElementById("kanji-image").innerHTML = "";
-
-    const allChoices = [...new Set(Object.values(currentDict))];
-    const wrongChoices = shuffle(allChoices.filter(c => c !== yomi)).slice(0, choiceCount - 1);
-    const choices = shuffle([yomi, ...wrongChoices]);
-
-    const choiceDiv = document.getElementById("choices");
-    choiceDiv.innerHTML = "";
-
-    choices.forEach(c => {
-        const btn = document.createElement("button");
-        btn.textContent = c;
-        btn.className = "choice-btn";
-        btn.onclick = () => checkAnswer(c);
-        choiceDiv.appendChild(btn);
-    });
-
-    document.getElementById("result").textContent = "";
-    document.getElementById("next-btn").classList.add("hidden");
-
-    // ★ ここを追加（スマホでボタンが押せなくなる問題の対策）
-    document.querySelectorAll(".choice-btn").forEach(btn => {
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-    });
-}
-
-
-// --- 回答チェック ---
-function checkAnswer(choice) {
-    const correct = questions[index][1];
-
-    // --- ここで全ボタンを無効化 ---
-    document.querySelectorAll(".choice-btn").forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = "0.6";   // 見た目で押せない感じに
-        btn.style.cursor = "default";
-    });
-
-    if (choice === correct) {
-        document.getElementById("result").textContent = "⭕ 正解！";
-        document.getElementById("result").style.color = "green";
-        score++;
-    } else {
-        document.getElementById("result").textContent = `❌ 不正解… 正解は「${correct}」`;
-        document.getElementById("result").style.color = "red";
+    h1 { color: #006699; font-size: 28px; font-weight: bold; margin-bottom: 25px; }
+    label { font-size: 20px; font-weight: bold; display: block; margin-bottom: 10px; }
+    select {
+      font-size: 18px;
+      padding: 10px;
+      width: 90%;
+      max-width: 500px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
-
-    document.getElementById("next-btn").classList.remove("hidden");
-}
-
-
-// --- 次へ ---
-document.getElementById("next-btn").onclick = () => {
-    index++;
-    if (index >= 5) {
-        showResult();
-    } else {
-        loadQuestion();
+    .kanji { font-size: 72px; font-weight: bold; margin: 15px 0; color: #111; }
+    .image-container {
+      font-size: 14px;
+      font-style: italic;
+      color: gray;
+      margin: 10px 0;
+      min-height: 20px;
     }
-};
+    .image-container img {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 6px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 500px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      background-color: #008ccb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background-color: #006699; }
+    .btn-next { background-color: #28a745; }
+    .btn-next:hover { background-color: #218838; }
+    input[type="text"] {
+      width: 80%;
+      max-width: 300px;
+      padding: 10px;
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .screen { display: none; }
+    .active { display: block; }
+    
+    .rank-box { background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 15px auto; max-width: 500px; text-align: left; }
+    .rank-box h3 { margin-top: 0; color: #333; text-align: center; border-bottom: 2px solid #008ccb; padding-bottom: 5px; }
+    .rank-list { list-style: none; padding: 0; margin: 0; }
+    .rank-list li { font-size: 15px; font-weight: bold; padding: 8px 0; border-bottom: 1px dashed #ccc; font-family: monospace; }
+    .my-score-highlight { font-size: 32px; font-weight: bold; color: #dc3545; margin: 10px 0; }
+    .result-details { font-size: 16px; margin-bottom: 20px; line-height: 1.6; }
+  </style>
+</head>
+<body>
 
-// --- 結果 ---
-function showResult() {
-    const time = (Date.now() - startTime) / 1000;
-    const multiplier = choiceCount * 60;
-    const baseScore = score * multiplier;
-    const timeBonus = Math.max(0, Math.floor((50 - time) * 10));
-    const totalScore = score > 0 ? baseScore + timeBonus : 0;
+<div class="container">
+  <div id="start-screen" class="screen active">
+    <h1>難読さかな編漢字クイズ</h1>
+    <label for="age-select">あなたの 年齢 / 学年 を教えてね：</label>
+    <select id="age-select">
+      <option value="初級(3択)">幼児～小学校低学年 (3択)</option>
+      <option value="中級(4択)" selected>小学校高学年～中学生 (4択)</option>
+      <option value="上級(5択)">高校生～大人 (5択・激難)</option>
+    </select>
+    
+    <button class="btn" id="start-btn">クイズを始める</button>
 
-    document.getElementById("final-score").textContent = `${totalScore} 点`;
-    document.getElementById("final-detail").textContent =
-        `正解数：${score} / 5問　時間：${time.toFixed(1)}秒`;
+    <div class="rank-box">
+      <h3 id="start-rank-title">【中級(4択)の現在のトップ3】</h3>
+      <ul id="start-ranking-list" class="rank-list">
+        <li>読み込み中...</li>
+      </ul>
+    </div>
+  </div>
 
-    showScreen("result-screen");
+  <div id="quiz-screen" class="screen">
+    <div id="question-progress" style="font-size: 14px; color: #666;"></div>
+    <div class="image-container" id="fish-image-area">🔍 お魚漢字の正体は何かな？</div>
+    <div class="kanji" id="kanji-display"></div>
+    <div id="choices-container"></div>
+    <div id="result-message" style="font-size: 20px; font-weight: bold; margin: 15px 0; min-height: 30px;"></div>
+    <button id="btn-next" class="btn btn-next" style="display: none;">次の問題へ</button>
+  </div>
 
-    document.getElementById("save-btn").onclick = () => {
-        const name = document.getElementById("player-name").value.replace(",", "");
-        const ranking = loadRanking();
+  <div id="result-screen" class="screen">
+    <h1>=== 最終結果 ===</h1>
+    <div id="total-score-display" class="my-score-highlight">0 点</div>
+    <div id="result-details-display" class="result-details"></div>
+    
+    <div id="register-area">
+      <label for="player-name">ランキングに名前を登録:</label>
+      <input type="text" id="player-name" value="プレイヤー1" maxlength="15"><br>
+      <button class="btn" id="register-btn">登録してランキングを見る</button>
+    </div>
+  </div>
 
-        ranking[mode].push({ name, totalScore, score, time });
-        ranking[mode].sort((a, b) => b.totalScore - a.totalScore);
+  <div id="ranking-screen" class="screen">
+    <h1 id="ranking-title">🏆 ランキング Top 5 🏆</h1>
+    <div id="my-rank-display" style="font-size: 22px; font-weight: bold; color: #0056b3; margin-bottom: 15px;"></div>
+    
+    <div class="rank-box">
+      <ul id="global-ranking-list" class="rank-list">
+        <li>読み込み中...</li>
+      </ul>
+    </div>
+    
+    <button class="btn" style="background-color: #6c757d;" id="back-title-btn">タイトルへ戻る</button>
+  </div>
+</div>
 
-        saveRanking(ranking);
-        showRanking(ranking[mode]);
-    };
-}
-
-// --- ランキング ---
-function showRanking(list) {
-    showScreen("ranking-screen");
-
-    const div = document.getElementById("ranking-list");
-    div.innerHTML = "";
-
-    list.slice(0, 5).forEach((r, i) => {
-        div.innerHTML += `<p>${i + 1}位：${r.name}（${r.totalScore}点 / ${r.score}問 / ${r.time.toFixed(1)}秒）</p>`;
-    });
-
-    document.getElementById("reset-btn").onclick = () => {
-        if (confirm("ランキングを全部消しますか？")) {
-            localStorage.removeItem("fish_ranking");
-            alert("ランキングを消しました！");
-            showScreen("start-screen");
-        }
-    };
-
-    document.getElementById("back-btn").onclick = () => {
-        showScreen("start-screen");
-    };
-}
+<script type="module" src="script.js"></script>
+</body>
+</html>
