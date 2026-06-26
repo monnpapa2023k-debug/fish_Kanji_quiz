@@ -1,62 +1,244 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>さかな漢字クイズ</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>魚の難読漢字クイズ（オンラインランキング付）</title>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f0f8ff;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h1 { color: #006699; }
+    .kanji { font-size: 72px; font-weight: bold; margin: 20px 0; color: #111; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 18px;
+      background-color: #008ccb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background-color: #006699; }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .screen { display: none; }
+    .active { display: block; }
+    ol { text-align: left; max-width: 300px; margin: 20px auto; font-size: 18px; }
+    li { margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px dashed #ccc; }
+  </style>
 </head>
 <body>
 
-<div id="app">
+<div class="container">
+  <h1>🐟 魚の難読漢字クイズ 🐟</h1>
 
-    <!-- スタート画面 -->
-    <section id="start-screen" class="screen">
-        <h1>さかな漢字クイズ</h1>
+  <div id="start-screen" class="screen active">
+    <p>魚の漢字の読み方を当てるクイズです（全5問）。</p>
+    <button class="btn" onclick="startQuiz()">クイズを始める</button>
+  </div>
 
-        <label for="difficulty">難易度を選んでね：</label>
-        <select id="difficulty">
-            <option value="easy">初級（3択）</option>
-            <option value="normal">中級（4択）</option>
-            <option value="hard">上級（5択）</option>
-        </select>
+  <div id="quiz-screen" class="screen">
+    <div id="question-number" style="font-size: 14px; color: #666;"></div>
+    <div class="kanji" id="kanji-display"></div>
+    <div id="choices-container"></div>
+  </div>
 
-        <button id="start-btn">スタート</button>
-    </section>
-
-    <!-- クイズ画面 -->
-    <section id="quiz-screen" class="screen hidden">
-        <h2 id="progress"></h2>
-        <div id="kanji-image"></div>
-        <h1 id="question"></h1>
-        <div id="choices"></div>
-        <p id="result"></p>
-        <button id="next-btn" class="hidden">次へ</button>
-    </section>
-
-    <!-- 結果画面 -->
-    <section id="result-screen" class="screen hidden">
-        <h1>結果発表！</h1>
-        <h2 id="final-score"></h2>
-        <p id="final-detail"></p>
-
-        <label for="player-name">名前を入力してランキング登録：</label>
-        <input id="player-name" type="text" value="プレイヤー1">
-
-        <button id="save-btn">ランキングに登録</button>
-    </section>
-
-    <!-- ランキング画面 -->
-    <section id="ranking-screen" class="screen hidden">
-        <h1 id="rank-title"></h1>
-        <div id="ranking-list"></div>
-
-        <button id="back-btn">タイトルへ戻る</button>
-        <button id="reset-btn">ランキングをリセット</button>
-    </section>
-
+  <div id="result-screen" class="screen">
+    <h2>結果発表</h2>
+    <p style="font-size: 24px; font-weight: bold;">あなたのスコア: <span id="final-score">0</span> / 5 問正解</p>
+    
+    <div id="register-area">
+      <p>オンラインランキングに登録しますか？</p>
+      <input type="text" id="player-name" placeholder="ニックネームを入力" maxlength="10"><br>
+      <button class="btn" onclick="submitScore()">ランキングに登録する</button>
+    </div>
+    <hr>
+    <h3>🏆 全国ランキング（トップ10）</h3>
+    <ol id="ranking-list">
+      <li>読み込み中...</li>
+    </ol>
+    <button class="btn" style="background-color: #666;" onclick="resetQuiz()">もう一度遊ぶ</button>
+  </div>
 </div>
 
-<script src="script.js"></script>
+<script type="module">
+  // --- Firebase SDKの読み込み ---
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  import { getDatabase, ref, push, set, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+  // ⚠️【最重要】ここをご自身のFirebaseプロジェクトの設定に書き換えてください
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "fish-quiz-ranking.firebaseapp.com",
+    databaseURL: "https://fish-quiz-ranking-default-rtdb.firebaseio.com",
+    projectId: "fish-quiz-ranking",
+    storageBucket: "fish-quiz-ranking.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // Firebase初期化
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // --- クイズの基本データ（必要に応じて変更してください） ---
+  const quizData = [
+    { kanji: "鮪", choices: ["さけ", "まぐろ", "たこ", "たい"], answer: "まぐろ" },
+    { kanji: "鮭", choices: ["さけ", "にしん", "いわし", "あゆ"], answer: "さけ" },
+    { kanji: "鰹", choices: ["さば", "すずき", "かつお", "まぐろ"], answer: "かつお" },
+    { kanji: "鯖", choices: ["あじ", "さば", "いわし", "さんま"], answer: "さば" },
+    { kanji: "鯛", choices: ["ひらめ", "たら", "ぶり", "たい"], answer: "たい" }
+  ];
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+
+  // --- 画面切り替えの処理 ---
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+  }
+
+  // --- クイズ進行ロジック ---
+  window.startQuiz = function() {
+    currentQuestionIndex = 0;
+    score = 0;
+    showScreen('quiz-screen');
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const currentQuiz = quizData[currentQuestionIndex];
+    document.getElementById('question-number').innerText = `第 ${currentQuestionIndex + 1} 問 / 全 ${quizData.length} 問`;
+    document.getElementById('kanji-display').innerText = currentQuiz.kanji;
+    
+    const choicesContainer = document.getElementById('choices-container');
+    choicesContainer.innerHTML = '';
+    
+    currentQuiz.choices.forEach(choice => {
+      const button = document.createElement('button');
+      button.className = 'btn';
+      button.innerText = choice;
+      button.onclick = () => checkAnswer(choice);
+      choicesContainer.appendChild(button);
+    });
+  }
+
+  function checkAnswer(selected) {
+    const currentQuiz = quizData[currentQuestionIndex];
+    if (selected === currentQuiz.answer) {
+      score++;
+    }
+    
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizData.length) {
+      showQuestion();
+    } else {
+      endQuiz();
+    }
+  }
+
+  function endQuiz() {
+    document.getElementById('final-score').innerText = score;
+    document.getElementById('register-area').style.display = 'block'; // 登録フォームを表示
+    showScreen('result-screen');
+    loadRanking(); // ランキングの読み込み
+  }
+
+  window.resetQuiz = function() {
+    showScreen('start-screen');
+  }
+
+  // --- Firebase オンラインランキング処理 ---
+  
+  // スコアをインターネット上に送信
+  window.submitScore = function() {
+    const nameInput = document.getElementById('player-name');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+      alert("名前を入力してください。");
+      return;
+    }
+
+    const scoresRef = ref(database, 'scores');
+    const newScoreRef = push(scoresRef);
+    
+    set(newScoreRef, {
+      name: name,
+      score: Number(score),
+      timestamp: Date.now()
+    }).then(() => {
+      alert("ランキングに登録されました！");
+      document.getElementById('register-area').style.display = 'none'; // 送信後はフォームを隠す
+      nameInput.value = "";
+    }).catch((error) => {
+      console.error("保存失敗:", error);
+      alert("通信エラーが発生しました。");
+    });
+  }
+
+  // 全端末共通のデータを取得して表示
+  function loadRanking() {
+    const scoresRef = ref(database, 'scores');
+    // 最大30件のデータを取得（後からソートして上位10件を抽出）
+    const topScoresQuery = query(scoresRef, orderByChild('score'), limitToLast(30));
+
+    onValue(topScoresQuery, (snapshot) => {
+      const data = snapshot.val();
+      const rankingList = [];
+      
+      for (let id in data) {
+        rankingList.push(data[id]);
+      }
+      
+      // スコアの高い順に並び替え
+      rankingList.sort((a, b) => b.score - a.score);
+
+      const rankingContainer = document.getElementById("ranking-list");
+      let html = "";
+      
+      // 上位10件のみ表示
+      const displayList = rankingList.slice(0, 10);
+      
+      displayList.forEach((entry, index) => {
+        html += `<li>${index + 1}位: ${escapeHTML(entry.name)} ── ${entry.score}問正解</li>`;
+      });
+      
+      rankingContainer.innerHTML = html || "<li>まだデータがありません</li>";
+    });
+  }
+
+  // セキュリティ対策（XSS防止用の名前のエスケープ処理）
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+</script>
+
 </body>
 </html>
