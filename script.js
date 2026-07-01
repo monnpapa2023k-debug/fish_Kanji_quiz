@@ -28,8 +28,8 @@ const kanjiEasy = {
 const kanjiNormal = {
   "鯵": "あじ", "鰺": "あじ", "鮑": "あわび", "鰒": "ふぐ", "魷": "いか",
   "鯔": "ぼら", "鯆": "いるか", "鮇": "いわな", "鱓": "うつぼ", "鱏": "えい",
-  "鮖": "かじか", "魛": "たちうお", "鰊": "にしん", "鯏": "あさり", "鰡": "ぼら",
-  "鯑": "かずのこ", "鮟鱇": "あんこう", "鰍": "どじょう", "鰌": "どじょう", "鰔": "さより",
+  "鮖": "かじか", "魛": "たちうお", "鰊": "にしん", "": "あさり", "鰡": "ぼら",
+  "鯑": "かずの子", "鮟鱇": "あんこう", "鰍": "どじょう", "鰌": "どじょう", "鰔": "さより",
   "魴": "ほうぼう", "鮗": "このしろ", "鯊": "はぜ", "鯳": "すけとうだら", "鱚": "きす"
 };
 
@@ -37,13 +37,13 @@ const kanjiHard = {
   "魭": "あおうみがめ", "鯘": "あざれ", "鮩": "あみ", 
   "鯇": "あめのうお", "鰀": "あめのうお", "鮟": "あん", 
   "鮧": "えそ", "鰂": "いか", "鰞": "いか", "鮻": "いさぎ", 
-  "魦": "いさざ", "鱊": "いさだ", "鰵": "いしもち", "鰝": "いせえび", 
-  "魚鬼": "いとう", "鰮": "いわし", "鰮": "いわし", "鷠": "ぎょ", 
+  "": "いさざ", "鱊": "いさだ", "鰵": "いしもち", "鰝": "いせえび", 
+  "魚鬼": "いとう", "鰮": "いわし", "鷠": "ぎょ", 
   "鰾": "うきぶくろ", "鱥": "うぐい", "魿": "うろこ", 
   "鱁": "うるか", "鱗": "うろこ", "鱝": "えい", "鰩": "とびうお", 
   "鱛": "えそ", "鮆": "えつ", "鱴": "えつ", 
   "鰕": "えび", "鰓": "えら", 
-  "魞": "えri", "鰲": "おおがめ", "鮱": "ぼら", "鰧": "おこぜ", 
+  "魞": "えり", "鰲": "おおがめ", "鮱": "ぼら", "鰧": "おこぜ", 
   "魯": "おろか", "鱠": "なます", "鱪": "しいら", "魳": "かます",
   "鱫": "えそ", "鱦": "かたくちいわし", "鯺": "ふぐ", "鱵": "さより",
   "鱨": "ぎぎ", "鮄": "ほうぼう", "鯓": "うろこ"
@@ -59,6 +59,26 @@ let correctCount = 0;
 let startTime = 0;
 let totalTime = 0;
 let totalScore = 0;
+
+// --- 🎵 BGM管理用の設定 ---
+// ⚠️ ご自身のプロジェクトにあるBGM音声ファイルのパス（例: "audio/bgm_play.mp3" など）に書き換えてください。
+// クイズ中、結果画面、ランキング画面で別々のBGMを流す設定にしています（同じファイルにすれば同じ曲が流れます）。
+const bgmPlay = new Audio("audio/bgm_play.mp3");       // クイズ中のBGM
+const bgmResult = new Audio("audio/bgm_result.mp3");   // 結果・ランキング画面のBGM
+
+// BGMのループ（繰り返し再生）と音量設定
+bgmPlay.loop = true;
+bgmPlay.volume = 0.3; // 0.0（無音）〜 1.0（最大）
+bgmResult.loop = true;
+bgmResult.volume = 0.3;
+
+// 全てのBGMを停止するヘルパー関数
+function stopAllBGM() {
+  bgmPlay.pause();
+  bgmPlay.currentTime = 0;
+  bgmResult.pause();
+  bgmResult.currentTime = 0;
+}
 
 // 画面切り替え関数
 function showScreen(screenId) {
@@ -115,6 +135,10 @@ function startQuiz() {
   currentIndex = 0;
   correctCount = 0;
   startTime = Date.now();
+
+  // 🎵 クイズ開始に合わせてBGMを切り替え
+  stopAllBGM();
+  bgmPlay.play().catch(err => console.log("BGM再生に失敗しました（ブラウザの制限など）:", err));
 
   showScreen('quiz-screen');
   showQuestion();
@@ -215,6 +239,10 @@ function calculateFinalScore() {
     クリア時間: ${totalTime.toFixed(1)} 秒
   `;
 
+  // 🎵 結果画面に合わせてBGMをリザルト用に切り替え
+  stopAllBGM();
+  bgmResult.play().catch(err => console.log("BGM再生に失敗しました:", err));
+
   document.getElementById('register-area').style.display = "block";
   showScreen('result-screen');
 }
@@ -303,6 +331,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('btn-next').addEventListener('click', nextQuestion);
   document.getElementById('register-btn').addEventListener('click', registerRanking);
   document.getElementById('back-title-btn').addEventListener('click', () => {
+    // 🎵 タイトルに戻るときはBGMを止める（タイトル曲を用意する場合はここで再生）
+    stopAllBGM();
     showScreen('start-screen');
     updateStartRanking();
   });
