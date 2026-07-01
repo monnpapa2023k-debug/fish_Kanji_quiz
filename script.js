@@ -63,8 +63,8 @@ let totalScore = 0;
 // --- 🎵 BGM管理用の設定 ---
 // ⚠️ ご自身のプロジェクトにあるBGM音声ファイルのパス（例: "audio/bgm_play.mp3" など）に書き換えてください。
 // クイズ中、結果画面、ランキング画面で別々のBGMを流す設定にしています（同じファイルにすれば同じ曲が流れます）。
-const bgmPlay = new Audio("audio/bgm_play.mp3");       // クイズ中のBGM
-const bgmResult = new Audio("audio/bgm_result.mp3");   // 結果・ランキング画面のBGM
+const bgmPlay = new Audio("海辺のクイズマスター (1).mp4");       // クイズ中のBGM
+const bgmResult = new Audio("海辺のクイズマスター (1).mp4");   // 結果・ランキング画面のBGM
 
 // BGMのループ（繰り返し再生）と音量設定
 bgmPlay.loop = true;
